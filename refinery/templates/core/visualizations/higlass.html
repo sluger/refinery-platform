@@ -1,0 +1,60 @@
+{% extends "plain.html" %}
+
+{% block title %}
+    {{ block.super }} - Visualization
+{% endblock %}
+
+{% block head %}
+    <!-- HiGlass CSS -->
+    <link rel="stylesheet" type="text/css" href="TODO">
+
+    <!-- HiGlass JS-->
+    <script type="text/javascript" src="https://rawgit.com/hms-dbmi/higlass/v0.2.0/dist/scripts/higlass.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div id="higlass-component" style="width: 400px;"></div>
+
+    <script type="text/javascript">
+
+            var uuids = {{ uuids_json|safe }};
+            var promises = uuids.map(function(uuid) {
+                return Promise.resolve($.getJSON('/api/v2/nodes/' + uuid + '/?format=json'));
+            });
+
+            Promise.all(promises).then(function(promises) {
+                var tracks = $.map(promises, function(promise){
+                    return  {
+                      source: promise.relative_file_store_item_url,
+                      type: 'heatmap',
+                      height: 300
+                    };
+                });
+
+                var rectangularOneWindow =
+                    {"views":
+                        [
+                          {
+                            "chromInfoPath": "//s3.amazonaws.com/pkerp/data/hg19/chromInfo.txt",
+                            "domain": [
+                              0,
+                              3000000000
+                            ],
+                            "viewStyle": {
+                              "float": "left",
+                              "padding": "5px",
+                              "width": "100%"
+                            },
+                            "tracks": tracks
+                          }
+                        ],
+                        "editable": true
+                    };
+
+                higlass.HiGlassContainer('higlass-component', JSON.stringify(rectangularOneWindow));
+        });
+
+    </script>
+
+{% endblock %}
