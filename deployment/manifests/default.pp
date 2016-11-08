@@ -1,6 +1,7 @@
 $app_user = "vagrant"
 $app_group = $app_user
 $virtualenv = "/home/${app_user}/.virtualenvs/refinery-platform"
+$virtualenv_higlass = "/home/${app_user}/.virtualenvs/higlass"
 $project_root = "/${app_user}"
 $deployment_root = "${project_root}/deployment"
 $django_root = "${project_root}/refinery"
@@ -15,6 +16,7 @@ $django_settings_module = "config.settings.dev"
 $ui_app_root = "${django_root}/ui"
 $site_name = "Refinery"
 $site_url = "192.168.50.50:8000"
+$tornado_port=8008
 
 # to make logs easier to read
 class { 'timezone':

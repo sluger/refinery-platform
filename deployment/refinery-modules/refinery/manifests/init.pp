@@ -470,4 +470,32 @@ service { 'apache2':
   hasrestart => true,
 }
 
+class higlass_server {
+  $higlass_server_github_url = "https://github.com/hms-dbmi/higlass-server.git"
+
+  exec { "clone_higlass_server":
+    command => "/usr/bin/git clone $higlass_server_github_url ${project_root}/higlass-server",
+    creates => "${project_root}/higlass-server",
+  }
+  ->
+  python::virtualenv { $virtualenv_higlass:
+    ensure  => present,
+    owner   => $app_user,
+    group   => $app_group,
+    require => [ Class['venvdeps']],
+  }
+  exec{ "install_higlass_requirements":
+    command => "${virtualenv_higlass}/bin/pip install -r ${project_root}/refinery-platform/higlass-server/api/requirements.txt",
+    user        => $app_user,
+    group       => $app_group,
+    require => Python::Virtualenv[$virtualenv_higlass],
+  }
+  exec{ "run_tornado_server":
+    command => "${virtualenv_higlass}/bin/python ${project_root}/refinery-platform/higlass-server/api/run_tornado.py ${tornado_port}",
+    user        => $app_user,
+    group       => $app_group,
+    require => Exec['install_higlass_requirements'],
+  }
+}
+include higlass_server
 }

@@ -20,6 +20,8 @@ $email_use_tls = "true"
 $ui_app_root = "${django_root}/ui"
 # $site_name set by Facter
 # $site_url set by Facter
+$tornado_port=8008
+
 
 # solr is in the /data volume on AWS:
 $solr_data_set_manager_data = "/data/solr/data_set_manager"
