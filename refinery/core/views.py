@@ -3,6 +3,7 @@ import re
 import urllib
 import xmltodict
 import logging
+from os.path import abspath
 import json
 from urlparse import urljoin
 
@@ -623,15 +624,46 @@ def visualize_genome(request):
 
 
 def visualizations_higlass(request):
-    """Provide HiGlass visualization of requested nodes
-    """
+    """Provide HiGlass visualization of requested nodes"""
+    higlass_uuids = []
+
+    try:
+        current_site = Site.objects.get_current()
+    except Site.DoesNotExist:
+        logger.error(
+            "Cannot provide a full URL: no Sites configured or "
+            "SITE_ID is not set correctly")
+        return None
+
+    # Generate the full url for our tornado server
+    tornado_server_url = "//{}:{}".format(
+        current_site.domain.split(":")[0],
+        settings.TORNADO_SERVER_PORT
+    )
+
     uuids = request.GET.getlist('uuids')
-    uuids_json = json.dumps(uuids)
+
+    # Retrieve all Nodes matching the UUIDs in the request object
+    nodes = Node.objects.filter(uuid__in=uuids)
+
+    # Generate full path on disk to Node's respective datafiles
+    absolute_node_file_paths = \
+        [abspath(node.get_relative_file_store_item_url()) for node in nodes]
+
+    # POST absolute datafile paths to the Tornado Server and receive UUIDs in
+    # return
+    for absolute_path in absolute_node_file_paths:
+        data = requests.post(
+            tornado_server_url,
+            data={'processed_file': absolute_path}
+        )
+
+        higlass_uuids.append(str(json.loads(data.content)['uuid']))
 
     return render_to_response(
         'core/visualizations/higlass.html',
         {
-            'uuids_json': uuids_json
+            'higlass_uuids': higlass_uuids
         },
         context_instance=RequestContext(request))
 
