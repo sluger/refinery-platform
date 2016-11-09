@@ -2,6 +2,7 @@
 
 function VisualizationCtrl (
   $compile,
+  $httpParamSerializer,
   $scope,
   $templateCache,
   $uibModal,
@@ -15,7 +16,7 @@ function VisualizationCtrl (
   // the visualizations model contains the modal partial
   vm.visualizations = [
     { name: 'IGV', template: 'i-g-v-launch-modal.html' },
-    { name: 'hiGlass', template: '' }
+    { name: 'higlass', template: '' }
   ];
   vm.selectedVisualization = { select: null };
   vm.higlassConfig = { node_selection: [] };
@@ -59,11 +60,11 @@ function VisualizationCtrl (
     nodeGroupUpdate.$promise.then(function (response) {
       // update higlass config with actual node selection (not complements)
       angular.copy(response.nodes, vm.higlassConfig.node_selection);
+      var params = $httpParamSerializer({
+        uuids: vm.higlassConfig.node_selection
+      });
+      $window.open('/visualizations/higlass?' + params);
     });
-    // var params = $httpParamSerializer({
-    //  node_uuids: vm.hiGlassConfig.node_selection
-    // });
-   // $window.open('/visualize/genome?' + params);
   };
 
   // Helper method for UI to check if any nodes are selected
@@ -81,6 +82,7 @@ angular
   .module('refineryVisualization')
   .controller('VisualizationCtrl', [
     '$compile',
+    '$httpParamSerializer',
     '$scope',
     '$templateCache',
     '$uibModal',
