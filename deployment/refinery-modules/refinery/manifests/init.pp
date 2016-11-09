@@ -475,7 +475,6 @@ class higlass_server {
 
   exec { "clone_higlass_server":
     command => "/usr/bin/git clone $higlass_server_github_url ${project_root}/higlass-server",
-    creates => "${project_root}/higlass-server",
   }
   ->
   python::virtualenv { $virtualenv_higlass_server:
@@ -488,10 +487,10 @@ class higlass_server {
     command => "${$virtualenv_higlass_server}/bin/pip install -r ${project_root}/higlass-server/api/requirements.txt",
     user        => $app_user,
     group       => $app_group,
-    require => Python::Virtualenv[$virtualenv_higlass],
+    require => Python::Virtualenv[$virtualenv_higlass_server],
   }
   exec{ "run_tornado_server":
-    command => "${$virtualenv_higlass_server}/bin/python ${project_root}/higlass-server/api/run_tornado.py ${higlass_server_port} &",
+    command => "${$virtualenv_higlass_server}/bin/python ${project_root}/higlass-server/api/run_tornado.py ${tornado_server_port} &",
     user        => $app_user,
     group       => $app_group,
     require => Exec['install_higlass_requirements'],
