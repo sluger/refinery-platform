@@ -16,7 +16,7 @@ $django_settings_module = "config.settings.dev"
 $ui_app_root = "${django_root}/ui"
 $site_name = "Refinery"
 $site_url = "192.168.50.50:8000"
-$higlass_server_port=8008
+$tornado_server_port = 8008
 
 # to make logs easier to read
 class { 'timezone':
