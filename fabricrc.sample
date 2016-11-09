@@ -5,6 +5,7 @@
 project_user=ubuntu
 refinery_project_dir=/srv/refinery-platform
 refinery_virtualenv_name=refinery-platform
+higlass_server_virtualenv_name=higlass_server
 
 # deployment hosts
 dev_host=refinery-dev.example.org

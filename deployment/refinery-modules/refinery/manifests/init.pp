@@ -478,20 +478,20 @@ class higlass_server {
     creates => "${project_root}/higlass-server",
   }
   ->
-  python::virtualenv { $virtualenv_higlass:
+  python::virtualenv { $virtualenv_higlass_server:
     ensure  => present,
     owner   => $app_user,
     group   => $app_group,
     require => [ Class['venvdeps']],
   }
   exec{ "install_higlass_requirements":
-    command => "${virtualenv_higlass}/bin/pip install -r ${project_root}/refinery-platform/higlass-server/api/requirements.txt",
+    command => "${$virtualenv_higlass_server}/bin/pip install -r ${project_root}/higlass-server/api/requirements.txt",
     user        => $app_user,
     group       => $app_group,
     require => Python::Virtualenv[$virtualenv_higlass],
   }
   exec{ "run_tornado_server":
-    command => "${virtualenv_higlass}/bin/python ${project_root}/refinery-platform/higlass-server/api/run_tornado.py ${tornado_port}",
+    command => "${$virtualenv_higlass_server}/bin/python ${project_root}/higlass-server/api/run_tornado.py ${higlass_server_port} &",
     user        => $app_user,
     group       => $app_group,
     require => Exec['install_higlass_requirements'],
