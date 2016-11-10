@@ -649,7 +649,8 @@ def visualizations_higlass(request):
 
     # Generate full path on disk to Node's respective datafiles
     absolute_node_file_paths = \
-        [abspath(node.get_relative_file_store_item_url()) for node in nodes]
+        [abspath(node.get_file_store_item().get_datafile_url()) for node in
+         nodes]
 
     # POST absolute datafile paths to the Tornado Server and receive UUIDs in
     # return
