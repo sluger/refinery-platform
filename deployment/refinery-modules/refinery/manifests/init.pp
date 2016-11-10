@@ -405,7 +405,7 @@ class ui {
     environment => ["DJANGO_SETTINGS_MODULE=${django_settings_module}"],
     user        => $app_user,
     group       => $app_group,
-    require     => Python::Requirements[$requirements],
+    require     => [Python::Requirements[$requirements], Exec['move_static_files']],
   }
 }
 include ui
@@ -470,11 +470,47 @@ service { 'apache2':
   hasrestart => true,
 }
 
+class higlass {
+  $higlass_github_url = "https://github.com/hms-dbmi/higlass.git"
+
+  exec { "clone_higlass":
+    command => "/usr/bin/sudo /bin/rm -rf ${project_root}/higlass && /usr/bin/git clone $higlass_github_url ${project_root}/higlass",
+    user        => $app_user,
+    group       => $app_group,
+  }
+
+  exec { "checkout_higlass_release":
+    command => "/usr/bin/git checkout tags/v0.2.4",
+    user        => $app_user,
+    group       => $app_group,
+    cwd => "${project_root}/higlass",
+    require => Exec['clone_higlass'],
+  }
+  exec{ "move_static_files":
+    command => "/usr/bin/sudo /bin/mv -t ${django_root}/static/source/js/higlass/ dist/scripts/higlass.js dist/scripts/worker.js",
+    user        => $app_user,
+    group       => $app_group,
+    cwd => "${project_root}/higlass",
+    require => Exec['checkout_higlass_release'],
+  }
+}
+
+include higlass
+
 class higlass_server {
   $higlass_server_github_url = "https://github.com/hms-dbmi/higlass-server.git"
 
   exec { "clone_higlass_server":
-    command => "/usr/bin/git clone $higlass_server_github_url ${project_root}/higlass-server",
+    command => "/usr/bin/sudo /bin/rm -rf ${project_root}/higlass-server && /usr/bin/git clone $higlass_server_github_url ${project_root}/higlass-server",
+    user        => $app_user,
+    group       => $app_group,
+  }
+  exec { "checkout_higlass_server_release":
+    command => "/usr/bin/git checkout dev",
+    user        => $app_user,
+    group       => $app_group,
+    cwd => "${project_root}/higlass-server",
+    require => Exec['clone_higlass_server'],
   }
   ->
   python::virtualenv { $virtualenv_higlass_server:
@@ -490,10 +526,10 @@ class higlass_server {
     require => Python::Virtualenv[$virtualenv_higlass_server],
   }
   exec{ "run_tornado_server":
-    command => "${$virtualenv_higlass_server}/bin/python ${project_root}/higlass-server/api/run_tornado.py ${tornado_server_port} &",
+    command => "/usr/bin/sudo ${$virtualenv_higlass_server}/bin/python ${project_root}/higlass-server/api/run_tornado.py ${tornado_server_port} &",
     user        => $app_user,
     group       => $app_group,
-    require => Exec['install_higlass_requirements'],
+    require => [Exec['install_higlass_requirements'],  Exec['checkout_higlass_server_release']],
   }
 }
 include higlass_server
