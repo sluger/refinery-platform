@@ -636,7 +636,8 @@ def visualizations_higlass(request):
         return None
 
     # Generate the full url for our tornado server
-    tornado_server_url = "//{}:{}".format(
+    tornado_server_url = "{}://{}:{}/tilesets/".format(
+        settings.REFINERY_URL_SCHEME,
         current_site.domain.split(":")[0],
         settings.TORNADO_SERVER_PORT
     )
