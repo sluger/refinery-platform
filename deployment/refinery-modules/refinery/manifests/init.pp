@@ -523,6 +523,7 @@ class higlass_server {
     command => "${$virtualenv_higlass_server}/bin/pip install -r ${project_root}/higlass-server/api/requirements.txt",
     user        => $app_user,
     group       => $app_group,
+    timeout     => 0,
     require => Python::Virtualenv[$virtualenv_higlass_server],
   }
   exec{ "run_tornado_server":
