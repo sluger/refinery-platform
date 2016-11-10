@@ -1,18 +1,24 @@
 {% extends "plain.html" %}
-
+{% load humanize %}
+{% load static %}
 {% block title %}
     {{ block.super }} - Visualization
 {% endblock %}
 
 {% block head %}
-    <!-- HiGlass CSS -->
+    <!-- HiGlass CSS
     <link rel="stylesheet" type="text/css" href="TODO">
-
-    <!-- jQuery JS -->
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-    <!-- HiGlass JS-->
-    <script type="text/javascript" src="https://rawgit.com/hms-dbmi/higlass/v0.2.0/dist/scripts/higlass.js"></script>
+    -->
+  <!-- HiGlass JS-->
+  <script src="{% static "js/higlass/higlass.js" %}"></script>
+  <script type="text/javascript">
+    window.djangoApp = {
+      tornadoServerPort: '{{ TORNADO_SERVER_PORT }}'
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/page.css">
 {% endblock %}
 
 {% block content %}
@@ -21,19 +27,16 @@
 
     <script type="text/javascript">
 
-            var uuids = {{ uuids_json|safe }};
-            var promises = uuids.map(function(uuid) {
-                return Promise.resolve($.getJSON('/api/v2/nodes/' + uuid + '/?format=json'));
-            });
+            var uuids = {{ higlass_uuids|safe }};
 
-            Promise.all(promises).then(function(promises) {
-                var tracks = promises.map(function(promise){
-                    return  {
-                      source: promise.relative_file_store_item_url,
-                      type: 'heatmap',
-                      height: 300
-                    };
-                });
+            var tracks = uuids.map(function(uuid){
+                return {
+                  api_source: '//' + document.location.hostname + ':' +
+                  window.djangoApp.tornadoServerPort + '/tilesets/multi/render/',
+                  tileset_uuid: uuid,
+                  type: 'heatmap',
+                  height: 300
+                }});
 
                 var rectangularOneWindow =
                     {"views":
@@ -56,7 +59,6 @@
                     };
 
                 higlass.HiGlassContainer('higlass-component', JSON.stringify(rectangularOneWindow));
-        });
 
     </script>
 
