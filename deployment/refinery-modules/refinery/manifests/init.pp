@@ -487,7 +487,7 @@ class higlass {
     require => Exec['clone_higlass'],
   }
   exec{ "move_static_files":
-    command => "/usr/bin/sudo /bin/mv -t ${django_root}/static/source/js/higlass/ dist/scripts/higlass.js dist/scripts/worker.js",
+    command => "/usr/bin/sudo /bin/mv -t ${django_root}/static/source/js/higlass/ dist/scripts/higlass.js",
     user        => $app_user,
     group       => $app_group,
     cwd => "${project_root}/higlass",
