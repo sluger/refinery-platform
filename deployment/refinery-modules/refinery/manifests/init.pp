@@ -478,7 +478,6 @@ class higlass {
     user        => $app_user,
     group       => $app_group,
   }
-
   exec { "checkout_higlass_release":
     command => "/usr/bin/git checkout tags/v0.2.4",
     user        => $app_user,
@@ -486,12 +485,18 @@ class higlass {
     cwd => "${project_root}/higlass",
     require => Exec['clone_higlass'],
   }
+  exec{ "create_dir":
+    command => "/usr/bin/sudo /bin/mkdir ${django_root}/static/source/js/higlass",
+    user        => $app_user,
+    group       => $app_group,
+    require => Exec['checkout_higlass_release'],
+  }
   exec{ "move_static_files":
     command => "/usr/bin/sudo /bin/mv -t ${django_root}/static/source/js/higlass/ dist/scripts/higlass.js",
     user        => $app_user,
     group       => $app_group,
     cwd => "${project_root}/higlass",
-    require => Exec['checkout_higlass_release'],
+    require => Exec['create_dir'],
   }
 }
 
