@@ -47,5 +47,6 @@ def extra_context(context):
         "REFINERY_EXTERNAL_AUTH_MESSAGE":
             settings.REFINERY_EXTERNAL_AUTH_MESSAGE,
         "REFINERY_TUTORIAL_STEPS": settings.REFINERY_TUTORIAL_STEPS,
-        "SOLR_SYNONYM_SEARCH": settings.SOLR_SYNONYMS
+        "SOLR_SYNONYM_SEARCH": settings.SOLR_SYNONYMS,
+        "TORNADO_SERVER_PORT": settings.TORNADO_SERVER_PORT
     }
