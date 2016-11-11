@@ -657,7 +657,7 @@ def visualizations_higlass(request):
     for absolute_path in absolute_node_file_paths:
         data = requests.post(
             tornado_server_url,
-            data={'processed_file': absolute_path}
+            data={'processed_file': absolute_path, "file_type": 'cooler'}
         )
 
         higlass_uuids.append(str(json.loads(data.content)['uuid']))
