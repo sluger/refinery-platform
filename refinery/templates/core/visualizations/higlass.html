@@ -32,7 +32,7 @@
             var tracks = uuids.map(function(uuid){
                 return {
                   api_source: '//' + document.location.hostname + ':' +
-                  window.djangoApp.tornadoServerPort + '/tilesets/multi/render',
+                  window.djangoApp.tornadoServerPort + '/tilesets/multi',
                   tileset_uuid: uuid,
                   type: 'heatmap',
                   height: 300
