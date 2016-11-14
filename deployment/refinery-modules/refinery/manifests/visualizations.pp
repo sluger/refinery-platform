@@ -1,4 +1,4 @@
-class refinery::vizualizations {
+class refinery::visualizations {
 
   class higlass {
 
