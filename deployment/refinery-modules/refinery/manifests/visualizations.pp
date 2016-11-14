@@ -7,7 +7,7 @@ class refinery::visualizations {
       ensure   => present,
       provider => git,
       source   => "https://github.com/hms-dbmi/higlass.git",
-      revision => 'v0.2.4',
+      revision => 'v0.3.0',
     }
 
     # Ensure directory to serve higlass static files from exists
