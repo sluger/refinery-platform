@@ -3,7 +3,6 @@ import re
 import urllib
 import xmltodict
 import logging
-from os.path import abspath
 import json
 from urlparse import urljoin
 
@@ -635,13 +634,14 @@ def visualizations_higlass(request):
             "SITE_ID is not set correctly")
         return None
 
-    # Generate the full url for our tornado server
+    # Generate the full url for higlass-server
     tornado_server_url = "{}://{}:{}/tilesets/".format(
         settings.REFINERY_URL_SCHEME,
         current_site.domain.split(":")[0],
         settings.TORNADO_SERVER_PORT
     )
 
+    # Retrieve Node UUIDs from within request object
     uuids = request.GET.getlist('uuids')
 
     # Retrieve all Nodes matching the UUIDs in the request object
@@ -649,8 +649,7 @@ def visualizations_higlass(request):
 
     # Generate full path on disk to Node's respective datafiles
     absolute_node_file_paths = \
-        [abspath(node.get_file_store_item().get_datafile_url()) for node in
-         nodes]
+        [node.get_file_store_item().get_absolute_path() for node in nodes]
 
     # POST absolute datafile paths to the Tornado Server and receive UUIDs in
     # return
