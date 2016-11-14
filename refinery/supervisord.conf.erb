@@ -98,3 +98,15 @@ autostart = true
 autorestart = true
 startsecs = 3
 priority = 999
+
+[program:higlass-server]
+command = python <%= @project_root %>/higlass-server/api/run_tornado.py <%= @tornado_server_port %>
+environment = PATH="<%= @virtualenv_higlass_server %>/bin"
+stdout_logfile = %(here)s/log/higlass-server.log
+stdout_logfile_maxbytes = 5MB
+stdout_logfile_backups = 4
+redirect_stderr = true
+autostart = true
+autorestart = true
+startsecs = 3
+priority = 999

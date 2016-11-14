@@ -435,6 +435,7 @@ exec { "supervisord":
     Class["solr"],
     Class["neo4j"],
     Class["::rabbitmq"],
+    Class["higlass_server"],
     Service["memcached"],
   ],
 }

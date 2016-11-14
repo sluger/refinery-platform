@@ -44,26 +44,15 @@ class refinery::vizualizations {
       ensure  => present,
       owner   => $app_user,
       group   => $app_group,
-      require => Vcsrepo["${project_root}/higlass-server"],
+      require => [Class['venvdeps'], Vcsrepo["${project_root}/higlass-server"]],
     }
     # Install higlass-server requirements
-    python::requirements { "${project_root}/higlass-server/api/requirements.txt" :
-      virtualenv => $virtualenv_higlass_server,
-      owner   => $app_user,
-      group   => $app_group,
-      require => Python::Virtualenv[$virtualenv_higlass_server]
-    }
-
-    # Run tornado as a background process
-    # (Including this in supervisor causes conflicts as there is now
-    # competition for two DJANGO_SETTINGS_MODULEs)
-    exec{ "run_tornado_server":
-      command => "sudo ${virtualenv_higlass_server}/bin/python run_tornado.py ${tornado_server_port} > tornado.out 2>&1 &",
+    exec{ "install_higlass_requirements":
+      command => "${$virtualenv_higlass_server}/bin/pip install -r ${project_root}/higlass-server/api/requirements.txt",
       user        => $app_user,
       group       => $app_group,
-      cwd         => "${project_root}/higlass-server/api/",
-      path => ['/usr/bin/'],
-      require => Python::Requirements["${project_root}/higlass-server/api/requirements.txt"]
+      timeout     => 0,
+      require => Python::Virtualenv[$virtualenv_higlass_server],
     }
   }
   include higlass_server
